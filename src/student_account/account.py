@@ -41,8 +41,11 @@ class BankAccount:
 
         self.withdraw(amount)
         other.deposit(amount)
-        return self._balance
 
+        self._transactions.append(("transfer_out",amount, other.owner))
+        other._transactions.append(("transfer_in",amount, self.owner))
+
+        return self._balance
     def monthly_interest(self, annual_rate: float) -> float:
         if annual_rate < 0:
             raise ValueError("Annual rate cannot be negative.")
@@ -61,6 +64,10 @@ class BankAccount:
 
         if not self._transactions:
             lines.append("No transactions.")
+        else:
+            lines.append("TransactionHistory:")
+            for txn in self._transactions:
+                lines.append(str(txn))
 
         return "\n".join(lines)
 
