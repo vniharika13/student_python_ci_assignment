@@ -83,3 +83,23 @@ def test_statement_shows_empty_and_populated_transaction_history():
     assert "TransactionHistory:" in populated_statement
     assert "('deposit', 25)" in populated_statement
     assert "('withdraw', 10)" in populated_statement
+
+
+def test_transfer_rejects_invalid_targets_and_zero_amounts():
+    sender = BankAccount("Liam", 150)
+    receiver = BankAccount("Noah", 50)
+
+    with pytest.raises(TypeError, match="Target must be a BankAccount."):
+        sender.transfer_to(object(), 10)
+
+    with pytest.raises(ValueError, match="Amount must be greater than zero."):
+        sender.transfer_to(receiver, 0)
+
+
+def test_zero_balance_interest_returns_zero_and_keeps_balance_stable():
+    account = BankAccount("Olivia", 0)
+    interest = account.monthly_interest(0.10)
+
+    assert interest == 0.0
+    assert account.balance == 0.0
+    assert account.transaction_count == 1
